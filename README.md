@@ -1,4 +1,4 @@
-# Proyecto 2 - Compiladores
+# Proyecto 3 - Compiladores
 
 Para correr el programa ejecutar en cmd (si los archivos ya estan generados, solo seguir paso 4):
 1. antlr Parser.g4
