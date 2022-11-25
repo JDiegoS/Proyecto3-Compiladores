@@ -1,0 +1,14 @@
+class Main{
+      i : IO;
+      input : String;
+      cadena : String;
+      output : String;
+
+      main(): SELF_TYPE {{
+        input <- (i.in_string());
+        cadena <- (input.concat("Concatenacion Compis"));
+        i.out_string(concat);
+        (new Main).main();
+      }};
+
+};

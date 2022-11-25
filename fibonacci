@@ -1,0 +1,23 @@
+class Main {
+      i : IO <- new IO;
+      count : Int <- 0;
+      input : Int;
+      segundo : Int <- 1;
+      primero : Int <- 0;
+      output : Int;
+
+      main(): IO {{
+        input <- (i.in_int());
+        while (count<input) loop {
+            output <- (primero + segundo);
+            primero <- segundo;
+            segundo <- output;
+            count <- (count + 1);
+            
+        } pool;
+        (i.out_int(output));
+        (new Main).main();
+        
+      }};
+
+};
