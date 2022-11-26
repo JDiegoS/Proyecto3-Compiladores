@@ -103,6 +103,17 @@ class MainWindow(qtw.QWidget):
                 
                 self.i_code_window.show()
 
+            i_codeMips = ''
+            for i in compiler.mips:
+                i_codeMips += i + '\n'
+
+            # Si hay codigo intermedio
+            if i_codeMips:
+                # Create new window
+                self.i_code_windowMips = ThirdWindow(i_codeMips)
+                
+                self.i_code_windowMips.show()
+
         def abrirArchivo():
             self.text=open(self.my_textFile.toPlainText()).read()
             codeEditor.setPlainText(self.text)
@@ -145,10 +156,45 @@ class SecondaryWindow(qtw.QWidget):
         # Add label to layout
         self.layout().addWidget(label)
 
-        
+class ThirdWindow(qtw.QWidget):
+    def __init__(self, i_code):
+        super().__init__()
+
+        # Vertical Layout
+        self.setLayout(qtw.QVBoxLayout())
+
+        self.setFixedWidth(700)
+        self.setFixedHeight(450)
+
+        # Label
+        self.label_1 = qtw.QLabel("Codigo MIPS", self)
+
+        self.layout().addWidget(self.label_1)
+
+        # Title
+        self.setWindowTitle("Codigo MIPS")
+
+        # Title
+        print(i_code)
+
+        # i_code
+        label = ScrollLabel()
+
+        # setting text to the label
+        label.setText(i_code)
+
+        f = label.font()
+        f.setPointSize(13)
+
+        label.setFont(f)
+
+        # Add label to layout
+        self.layout().addWidget(label)
+
+            
 
 app = qtw.QApplication([])
-mw = MainWindow('test2.cl')
+mw = MainWindow('pruebaMips')
 
 # run
 app.exec_()

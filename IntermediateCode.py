@@ -177,7 +177,11 @@ class IntermediateCode(ParserVisitor):
             self.quads.quadTable[-1]['result'] = 'd[' + str(variable['address']) + ']'
 
         else:
-            self.quads.generateQuadruple('', ctx.right.getText(), '', 'd[' + str(variable['address']) + ']')
+            var = self.getAttribute(ctx.right.getText())
+            if var != None:
+                self.quads.generateQuadruple('', 'd[' + str(var['address']) + ']', '', 'd[' + str(variable['address']) + ']')
+            else:
+                self.quads.generateQuadruple('', ctx.right.getText(), '', 'd[' + str(variable['address']) + ']')
         return
 
     

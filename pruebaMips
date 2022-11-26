@@ -1,0 +1,38 @@
+
+class Main {
+      a: Int <- 4;
+      b: Int <- 5;
+      c: Int <- 2;
+      d: Int <- 1;
+      t: Int<- 9;
+      u: Int<- 7;
+      v: Int<- 15;
+      main() : SELF_TYPE {{
+         t <- a - b;
+         u <- a - c;
+         v <- t + u;
+         a <- d;
+         d <- v + u;
+      }};
+  };
+
+d[974] = 4;
+d[978] = 5;
+d[982] = 2;
+d[986] = 1;
+d[990] = 9;
+d[994] = 7;
+d[998] = 15;
+Main.main:
+BeginFunc;
+
+t0 = d[974] sub d[978]; -1
+d[990] = t0;
+t1 = d[974] sub d[982]; 2
+d[994] = t1;
+t2 = d[990] add d[994]; 1
+d[998] = t2;
+d[974] = d[986];
+t3 = d[998] add d[994]; 15 2
+d[986] = t3;
+EndFunc;

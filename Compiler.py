@@ -8,6 +8,7 @@ from ParserParser import ParserParser
 from ParserVisitor import ParserVisitor
 from MyErrorListener import MyErrorListener
 from IntermediateCode import IntermediateCode
+from AssemblerCodeGenerator import AssemblerCodeGenerator
 
 from SymbolsTable import SymbolTable
 from helpers import *
@@ -17,6 +18,7 @@ class Compiler(object):
         
         self.errors = []
         self.code = []
+        self.mips = []
 
     def compile(self, file, text):
         data = FileStream(file)
@@ -85,21 +87,27 @@ class Compiler(object):
         print("\n TABLA DE SIMBOLOS\n")
         print(str(finalTable) + "\n")
 
+        # Solo genera codigo si no hay errores
+        if len(self.errors) == 1:
+            print("\n CODIGO INTERMEDIO\n")
 
-        print("\n CODIGO INTERMEDIO\n")
+            visitor = IntermediateCode(finalTable.table)
+            visitor.visit(tree)
+            self.code = visitor.writeCode()
 
-        visitor = IntermediateCode(finalTable.table)
-        visitor.visit(tree)
-        self.code = visitor.writeCode()
+            for i in self.code:
+                print(i)
 
-        for i in self.code:
-            print(i)
+            assem = AssemblerCodeGenerator(self.code, visitor.quads)
+            self.mips = assem.generateCode()
+            
+
 
     
 
     
 
 
-text=open('prueba').read()
+text=open('pruebaMips').read()
 main = Compiler()
-main.compile('prueba', text)
+main.compile('pruebaMips', text)

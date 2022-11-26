@@ -1,3 +1,4 @@
+'''
 from ParserParser import ParserParser
 from ParserVisitor import ParserVisitor
 from Quadruple import Quadruple
@@ -130,23 +131,30 @@ class AssemblerCodeGenerator():
         self.descriptors = Descriptors()
         self.operations = ['add' , 'sub', 'mul', 'div']
         self.assemblyCode = []
+        self.assemblyData = []
+        self.assemblyText = []
 
     def generateCode(self):
-        self.assemblyCode.append('.data')
-        self.assemblyCode.append('.text')
-        self.assemblyCode.append('  .globl main')
+        self.assemblyData.append('.data')
+        self.assemblyText.append('.text')
+        self.assemblyText.append('  .globl main')
         for i in self.code:
 
             if '.' in i and ':' in i:
                 #Funcion
                 name = i.split('.')[1]
-                self.assemblyCode.append(' ' + name)
+                self.assemblyText.append(' ' + name)
 
             elements = i.replace(';', '').split(' ')
             if '=' in elements:
                 op = ''
                 if len(elements) == 3:
-                    if elements[-1].isnumeric() == True:
+                    if elements[-1].isnumeric() == False:
+                        
+                        value = self.descriptors.varInRegisters(elements[-1])
+                        if value != -1:
+                            op = 'move'
+                    else:
                         op = 'li'
                 elif 'add' in elements:
                     op = 'add'
@@ -161,7 +169,19 @@ class AssemblerCodeGenerator():
                     regs = self.descriptors.getRegisters(i)
 
                     if 't' not in elements[2]:
-                        self.assemblyCode.append('  ' + op + ' $t' + str(regs[0]) + ', ' + elements[2])
+                        self.assemblyData.append('  ' + str(elements[0].replace('[', '').replace(']', '')) + ': .word ' + str(elements[2]))
+                        #self.assemblyData.append('  ' + op + ' $t' + str(regs[0]) + ', ' + elements[2])
+
+                elif op == 'move':
+                    
+                    regs = self.descriptors.getRegisters(i)
+                    print('rrrrrrrrrrrrrrrrrrrrrrrrrr')
+                    print(self.descriptors.registers)
+                    if 't' in elements[-1]:
+                        self.assemblyText.append('  ' + op + ' $t' + str(regs[0]) + ',  $t' + str(value))
+                    elif 'd[' in elements[0]:
+                        self.assemblyText.append('  lw $t' + str(elements[0].replace('[', '').replace(']', '')))
+                    print(regs)
 
                 elif op != '':
 
@@ -172,11 +192,12 @@ class AssemblerCodeGenerator():
                     regs[1] = regs[0]
                     regs[0] = resR
 
-                    self.assemblyCode.append('  ' + op + ' $t' + str(regs[0]) + ', $t' + str(regs[1]) + ', $t' + str(regs[2]))
+                    self.assemblyText.append('  ' + op + ' $t' + str(regs[0]) + ', $t' + str(regs[1]) + ', $t' + str(regs[2]))
                     
             
         print(self.descriptors.addresses)
         print(self.descriptors.registers)
         print()
-        print(self.assemblyCode)
-        return self.assemblyCode
+        print(self.assemblyData)
+        print(self.assemblyText)
+        '''
