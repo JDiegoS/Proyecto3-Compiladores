@@ -108,6 +108,6 @@ class Compiler(object):
     
 
 
-text=open('pruebaMips').read()
+text=open('condicional').read()
 main = Compiler()
-main.compile('pruebaMips', text)
+main.compile('condicional', text)

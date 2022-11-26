@@ -8,17 +8,18 @@ class Descriptors:
     def __init__(self):
         self.registers = ['', '', '', '', '', '', '']
         self.addresses = {}
-        self.operations = ['=', 'add' , 'sub', 'mul', 'div']
+        self.operations = ['=', 'add' , 'sub', 'mult', 'div', 'ble']
 
     def varInRegisters(self, variable):
         reg = 0
         for i in self.registers:
             if i == variable:
                 return reg
-            elif ',' in self.registers:
-                vars = self.registers.split(',')
-                if i in vars:
+            elif ',' in i:
+                vars = i.split(',')
+                if variable in vars:
                     return reg
+            reg += 1
         return -1
     
     def getRegisters(self, operation):
@@ -103,6 +104,7 @@ class Descriptors:
                 if validReg == 2:
                     validReg = 0
                 swaps = self.registers[validReg+1].split(',')
+                swaps = [i for i in swaps if i]
                 for s in swaps:
                     self.addresses[s] = self.addresses[s].replace(',' + str(validReg+1), '')
 
@@ -128,20 +130,24 @@ class AssemblerCodeGenerator():
         self.code = code
         self.quads = quads
         self.descriptors = Descriptors()
-        self.operations = ['add' , 'sub', 'mul', 'div']
+        self.operations = ['add' , 'sub', 'mult', 'div']
         self.assemblyCode = []
 
     def generateCode(self):
         self.assemblyCode.append('.data')
         self.assemblyCode.append('.text')
         self.assemblyCode.append('  .globl main')
+        index = 0
         for i in self.code:
 
-            if '.' in i and ':' in i:
-                #Funcion
-                name = i.split('.')[1]
-                self.assemblyCode.append(' ' + name)
-
+            if ':' in i:
+                if '.' in i: 
+                    #Funcion
+                    name = i.split('.')[1]
+                    self.assemblyCode.append(' ' + name)
+                else:
+                    self.assemblyCode.append(' ' + i)
+                continue
             elements = i.replace(';', '').split(' ')
             if '=' in elements:
                 op = ''
@@ -157,10 +163,13 @@ class AssemblerCodeGenerator():
                     op = 'add'
                 elif 'sub' in elements:
                     op = 'sub'
-                elif 'mul' in elements:
+                elif 'mult' in elements:
                     op = 'mul'
                 elif 'div' in elements:
                     op = 'div'
+                elif 'ble' in elements:
+                    op = 'sle'
+                
                 
                 if op == 'li':
                     regs = self.descriptors.getRegisters(i)
@@ -169,6 +178,10 @@ class AssemblerCodeGenerator():
 
                 elif op == 'move':
                     
+                    regs = self.descriptors.getRegisters(i)
+
+                elif op == 'sle':
+                    self.assemblyCode.append('  ' + op + ' $t3' + ', $t' + str(self.descriptors.varInRegisters(elements[2])) + ', $t' + str(self.descriptors.varInRegisters(elements[4])))                    
                     regs = self.descriptors.getRegisters(i)
 
                 elif op != '':
@@ -182,8 +195,20 @@ class AssemblerCodeGenerator():
 
 
                     self.assemblyCode.append('  ' + op + ' $t' + str(regs[0]) + ', $t' + str(regs[1]) + ', $t' + str(regs[2]))
-                    
             
+            elif 'IFFALSE' in elements:
+                self.assemblyCode.append('  beq $t3' + ', $zero' + ', ' + str(elements[-1]))     
+
+            elif 'goto' == elements[0]:
+                self.assemblyCode.append('  j ' + elements[1])     
+
+
+
+
+            index += 1
+                    
+        self.assemblyCode.append('  li $v0, 10')     
+        self.assemblyCode.append('  syscall')     
         print(self.descriptors.addresses)
         print(self.descriptors.registers)
         print()

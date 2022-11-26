@@ -3,6 +3,6 @@ class Main {
       b: Int <- 6;
 
       main() : SELF_TYPE {{
-         if (a <= b) then a <- (a + b) else a <- (a - b) fi;
+         if (a <= b) then a <- (a * a) else a <- (a / a) fi;
       }};
   };
