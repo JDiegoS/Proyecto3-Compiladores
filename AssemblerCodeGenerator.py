@@ -146,7 +146,12 @@ class AssemblerCodeGenerator():
             if '=' in elements:
                 op = ''
                 if len(elements) == 3:
-                    if elements[-1].isnumeric() == True:
+                    if elements[-1].isnumeric() == False:
+                        
+                        value = self.descriptors.varInRegisters(elements[-1])
+                        if value != -1:
+                            op = 'move'
+                    else:
                         op = 'li'
                 elif 'add' in elements:
                     op = 'add'
@@ -159,9 +164,12 @@ class AssemblerCodeGenerator():
                 
                 if op == 'li':
                     regs = self.descriptors.getRegisters(i)
-
                     if 't' not in elements[2]:
                         self.assemblyCode.append('  ' + op + ' $t' + str(regs[0]) + ', ' + elements[2])
+
+                elif op == 'move':
+                    
+                    regs = self.descriptors.getRegisters(i)
 
                 elif op != '':
 
@@ -171,6 +179,7 @@ class AssemblerCodeGenerator():
                     regs[2] = regs[1]
                     regs[1] = regs[0]
                     regs[0] = resR
+
 
                     self.assemblyCode.append('  ' + op + ' $t' + str(regs[0]) + ', $t' + str(regs[1]) + ', $t' + str(regs[2]))
                     
